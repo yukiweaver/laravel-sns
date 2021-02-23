@@ -13,11 +13,17 @@ class Article extends Model
         'body',
     ];
 
+    /**
+     * 記事に紐づくユーザデータを取得
+     */
     public function user():BelongsTo
     {
         return $this->belongsTo('App\User');
     }
 
+    /**
+     * 記事に紐づくいいねデータを取得
+     */
     public function likes():BelongsToMany
     {
         return $this->belongsToMany('App\User', 'likes')->withTimestamps();
@@ -40,5 +46,13 @@ class Article extends Model
     public function getCountLikesAttribute():int
     {
         return $this->likes->count();
+    }
+
+    /**
+     * 記事に紐づくタグデータを取得
+     */
+    public function tags():BelongsToMany
+    {
+        return $this->belongsToMany('App\Tag')->withTimestamps();
     }
 }

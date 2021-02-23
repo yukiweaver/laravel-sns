@@ -26,10 +26,12 @@ export default {
             type: Number,
             default: 0,
         },
+        // ログインしているか判定結果
         authorized: {
             type: Boolean,
             default: false,
         },
+        // いいね処理のルート
         endpoint: {
             type: String,
         }
