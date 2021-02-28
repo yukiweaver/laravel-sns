@@ -12,7 +12,9 @@ class UserController extends Controller
      */
     public function show(string $name)
     {
-        $user = User::where('name', $name)->first();
+        // リレーション先の、さらにリレーション先をEagerロード
+        // つまり、リレーション先である記事に紐づくuser,likes,tagsをEagerロード
+        $user = User::where('name', $name)->first()->load(['articles.user', 'articles.likes', 'articles.tags']);
 
         $articles = $user->articles->sortByDesc('created_at');
 
@@ -27,7 +29,13 @@ class UserController extends Controller
      */
     public function likes(string $name)
     {
-        $user = User::where('name', $name)->first();
+        // リレーション先の、さらにリレーション先をEagerロード
+        // 'likes.likes' で解説
+        // 一つ目のlikesはuser.likesのことでユーザがいいねしている記事データ（a）
+        // 二つ目のlikesはarticle.likesのことで記事にいいねしているユーザデータ（b）
+        // 「いいねした記事一覧」では、ある1人のユーザーがいいねした記事の一覧が表示される。ここで、(a)が必要。
+        // それぞれの記事については、いいね数を表示している。これを求めるのに、いいねしたユーザーモデルの数、つまり(b)の数をカウントしている。
+        $user = User::where('name', $name)->first()->load(['likes.user', 'likes.likes', 'likes.tags']);
 
         $articles = $user->likes->sortByDesc('created_at');
 
@@ -42,7 +50,9 @@ class UserController extends Controller
      */
     public function followings(string $name)
     {
-        $user = User::where('name', $name)->first();
+        // リレーション先の、さらにリレーション先をEagerロード
+        // ユーザーモデルのリレーション先のフォロー中ユーザーの、さらにリレーション先の、フォロワーをEagerロード
+        $user = User::where('name', $name)->first()->load('followings.followers');
 
         $followings = $user->followings->sortByDesc('created_at');
 
@@ -57,7 +67,9 @@ class UserController extends Controller
      */
     public function followers(string $name)
     {
-        $user = User::where('name', $name)->first();
+        // リレーション先の、さらにリレーション先をEagerロード
+        // ユーザーモデルのリレーション先のフォロワーの、さらにリレーション先の、フォロワーをEagerロード
+        $user = User::where('name', $name)->first()->load('followers.followers');
 
         $followers = $user->followers->sortByDesc('created_at');
 
